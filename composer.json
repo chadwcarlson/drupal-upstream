@@ -1,6 +1,6 @@
 {
-    "name": "drupal/recommended-project",
-    "description": "Project template for Drupal 8 projects with a relocated document root",
+    "name": "platformsh/drupal8",
+    "description": "This template builds Drupal 8 for Platform.sh based the Drupal Recommended Composer project.",
     "type": "project",
     "license": "GPL-2.0-or-later",
     "homepage": "https://www.drupal.org/project/drupal",
@@ -18,7 +18,10 @@
         "composer/installers": "^1.2",
         "drupal/core-composer-scaffold": "^8.8",
         "drupal/core-project-message": "^8.8",
-        "drupal/core-recommended": "^8.8"
+        "drupal/core-recommended": "^8.8",
+        "drupal/redis": "^1.5",
+        "drush/drush": "^10.6",
+        "platformsh/config-reader": "^2.4"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -26,7 +29,14 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "drupal/core-composer-scaffold": true,
+            "drupal/console-extend-plugin": true,
+            "drupal/core-project-message": true,
+            "cweagans/composer-patches": true
+        }
     },
     "extra": {
         "drupal-scaffold": {

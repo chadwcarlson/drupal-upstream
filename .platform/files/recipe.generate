@@ -1,0 +1,52 @@
+########################################################################################################################
+
+# Init.
+mkdir my-project && cd my-project
+git init
+
+# Upstream.
+git checkout -b 8.9.20
+git remote add project https://github.com/drupal/recommended-project.git
+git fetch --all --depth=2
+git fetch --all --tags
+git pull project 8.9.20
+
+# Mock user repo.
+git branch -m main
+
+########################################################################################################################
+# Platformify steps.
+
+# 0. Setup
+git checkout -b platformify
+
+# 1. Composer changes. 
+#   a) Allow plugins.
+composer config -g allow-plugins.composer/installers true --no-plugins
+composer config allow-plugins.composer/installers true --no-plugins
+composer config allow-plugins.drupal/core-composer-scaffold true --no-plugins
+composer config allow-plugins.drupal/console-extend-plugin true --no-plugins
+composer config allow-plugins.drupal/core-project-message true --no-plugins
+composer config allow-plugins.cweagans/composer-patches true --no-plugins
+
+#   b) Dependencies. 
+composer install
+composer require drupal/redis:^1.5 --prefer-dist --no-interaction
+composer require drush/drush:^10.6 --prefer-dist --no-interaction
+composer require platformsh/config-reader --prefer-dist --no-interaction
+
+# 2. Apply required file patches.
+# git apply ../build/.platform/files/recipe.platformify.diff --ignore-whitespace --quiet
+curl -fs https://raw.githubusercontent.com/chadwcarlson/drupal-upstream/main/.platform/files/recipe.platformify.diff | git apply --ignore-whitespace --quiet
+
+# 3. Move optional files back to root during full template generation.
+cp -R .platform/optional/. .
+rm -rf .platform/optional
+
+# Commit changes.
+git add .
+git commit -m 'Initialize template.'
+
+# Merge the revisions.
+git checkout main
+git merge platformify

@@ -1,0 +1,33 @@
+########################################################################################################################
+# Example project.
+
+# Init a starting project for testing.
+composer create-project drupal/recommended-project:^8.9.20 my-project --no-install
+
+# Git.
+cd my-project
+git init
+git branch -m main
+git add .
+git commit -m 'Sample init project.' 
+git checkout -b platformify
+########################################################################################################################
+# Platformify steps.
+
+# 1. Required files.
+curl -fs https://raw.githubusercontent.com/chadwcarlson/drupal-upstream/main/.platform/files/recipe.platformify.diff | git apply --ignore-whitespace --quiet
+
+# 2. Composer changes. 
+#   a) Allow plugins.
+composer config -g allow-plugins.composer/installers true --no-plugins
+composer config allow-plugins.composer/installers true --no-plugins
+composer config allow-plugins.drupal/core-composer-scaffold true --no-plugins
+composer config allow-plugins.drupal/console-extend-plugin true --no-plugins
+composer config allow-plugins.drupal/core-project-message true --no-plugins
+composer config allow-plugins.cweagans/composer-patches true --no-plugins
+
+#   b) Dependencies. 
+composer install
+composer require drupal/redis:^1.5 --prefer-dist --no-interaction
+composer require drush/drush:^10.6 --prefer-dist --no-interaction
+composer require platformsh/config-reader --prefer-dist --no-interaction
